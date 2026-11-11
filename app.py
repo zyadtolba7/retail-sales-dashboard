@@ -85,6 +85,8 @@ st.markdown(
         [data-testid="stMetricValue"] { font-size: 1.45rem; }
         [data-testid="stMetricLabel"] { font-size: .76rem; }
         [data-testid="stPlotlyChart"] { padding: 2px; }
+        [data-testid="stPlotlyChart"] .modebar-container { display: none !important; }
+        [data-testid="stPlotlyChart"] .js-plotly-plot { touch-action: pan-y; }
         .insight { padding: 10px 12px; font-size: .94rem; }
     }
     </style>
@@ -172,9 +174,9 @@ def chart_layout(fig: go.Figure, height: int = 350) -> go.Figure:
     fig.update_layout(
         height=height, template="plotly_dark", paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)", font=dict(family="Cairo, sans-serif", color="#dce7f7"),
-        margin=dict(l=18, r=18, t=48, b=16), legend=dict(orientation="h", y=1.12, x=1, xanchor="right"),
+        margin=dict(l=18, r=18, t=48, b=16), legend=dict(orientation="h", y=1.12, x=1, xanchor="right", itemclick=False, itemdoubleclick=False),
         hoverlabel=dict(bgcolor="#142238", font_size=13, font_family="Cairo"),
-        dragmode="pan",
+        dragmode=False,
     )
     fig.update_xaxes(showgrid=False, zeroline=False)
     fig.update_yaxes(gridcolor="rgba(137,162,195,.14)", zeroline=False)
