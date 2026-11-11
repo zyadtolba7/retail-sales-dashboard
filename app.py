@@ -31,7 +31,7 @@ CANONICAL_TEXT = {
     "returned": {"yes": "Yes", "y": "Yes", "true": "Yes", "1": "Yes", "no": "No", "n": "No", "false": "No", "0": "No"},
 }
 
-st.set_page_config(page_title="نبض المبيعات | تحليل تجزئة", page_icon="📊", layout="wide")
+st.set_page_config(page_title="نبض المبيعات | تحليل تجزئة", page_icon="📊", layout="wide", initial_sidebar_state="collapsed")
 
 st.markdown(
     """
@@ -56,6 +56,37 @@ st.markdown(
                direction: rtl; text-align: right; unicode-bidi: isolate; line-height: 1.9; }
     .muted { color: #96a7c0; font-size: .88rem; }
     div[data-testid="stDataFrame"] { direction: rtl; }
+    @media (max-width: 1024px) {
+        [data-testid="stAppViewContainer"] .main .block-container {
+            padding: 1rem .75rem 2rem .75rem;
+            max-width: 100%;
+        }
+        [data-testid="stHorizontalBlock"] {
+            flex-direction: column !important;
+            gap: .65rem !important;
+        }
+        [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+            flex: 1 1 100% !important;
+            width: 100% !important;
+            min-width: 100% !important;
+        }
+        .st-key-kpi-row [data-testid="stHorizontalBlock"] {
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+        }
+        .st-key-kpi-row [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+            flex: 1 1 calc(50% - .4rem) !important;
+            width: calc(50% - .4rem) !important;
+            min-width: calc(50% - .4rem) !important;
+        }
+        .hero { padding: 1rem; border-radius: 16px; }
+        .hero h1 { font-size: 1.55rem; }
+        [data-testid="stMetric"] { padding: 12px 14px; min-height: 84px; }
+        [data-testid="stMetricValue"] { font-size: 1.45rem; }
+        [data-testid="stMetricLabel"] { font-size: .76rem; }
+        [data-testid="stPlotlyChart"] { padding: 2px; }
+        .insight { padding: 10px 12px; font-size: .94rem; }
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -266,12 +297,13 @@ avg_order = revenue / orders if orders else 0
 return_rate = filtered.returned.astype(str).str.strip().str.lower().isin(["yes", "true", "1"]).mean() * 100
 
 if page == "لوحة الأداء":
-    a, b, c, d, e = st.columns(5)
-    a.metric("المبيعات · مليون", f"{revenue / 1_000_000:,.1f}", help="مليون جنيه مصري")
-    b.metric("الربح · مليون", f"{profit / 1_000_000:,.1f}", help="مليون جنيه مصري")
-    c.metric("هامش الربح", f"{margin:.1f}%")
-    d.metric("الطلبات · ألف", f"{orders / 1_000:,.1f}", help="ألف طلب")
-    e.metric("متوسط الطلب", f"{avg_order:,.0f}", help="جنيه مصري")
+    with st.container(key="kpi-row"):
+        a, b, c, d, e = st.columns(5)
+        a.metric("المبيعات · مليون", f"{revenue / 1_000_000:,.1f}", help="مليون جنيه مصري")
+        b.metric("الربح · مليون", f"{profit / 1_000_000:,.1f}", help="مليون جنيه مصري")
+        c.metric("هامش الربح", f"{margin:.1f}%")
+        d.metric("الطلبات · ألف", f"{orders / 1_000:,.1f}", help="ألف طلب")
+        e.metric("متوسط الطلب", f"{avg_order:,.0f}", help="جنيه مصري")
 
     month = filtered.dropna(subset=["order_month"]).groupby("order_month", as_index=False).agg(
         المبيعات=("sales_egp", "sum"), الربح=("profit_egp", "sum"))
